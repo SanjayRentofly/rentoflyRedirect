@@ -37,11 +37,17 @@
             }
             return "unknown";
         }
-
+    
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+    
         const os = getMobileOS();
-        let appLink = "rentofly://open/settings";
+        let screen = getQueryParam("screen") || "home"; // Default to home if no screen parameter
+        let appLink = `rentofly://${screen}`;
         let storeLink = "";
-
+    
         if (os === "android") {
             storeLink = "https://play.google.com/store/apps/details?id=com.rentoflymobile";
         } else if (os === "ios") {
@@ -49,18 +55,21 @@
         } else {
             storeLink = "https://rentofly.com/"; // Fallback page
         }
-
+    
         // Set manual link in case redirection fails
-        document.getElementById("manual-link").href = appLink;
-
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("manual-link").href = appLink;
+        });
+    
         // Try opening the app
         window.location.href = appLink;
-
+    
         // If the app isn't installed, redirect to the store after 2 seconds
         setTimeout(() => {
             window.location.href = storeLink;
         }, 2000);
     </script>
+    
 
 </body>
 </html>
