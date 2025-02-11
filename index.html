@@ -46,7 +46,6 @@
         const os = getMobileOS();
         let screen = getQueryParam("screen") || "home"; // Default to home if no screen parameter
         let appLink = `rentofly://${screen}`;
-        let storeLink = "";
     
         if (os === "android") {
             storeLink = "https://play.google.com/store/apps/details?id=com.rentoflymobile";
