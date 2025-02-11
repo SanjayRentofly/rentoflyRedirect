@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open My App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        #manual-link {
+            margin-top: 20px;
+            display: block;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Redirecting to the app...</h2>
+    <p>If you are not redirected automatically, click the button below:</p>
+
+    <a id="manual-link" href="#">Open App Manually</a>
+
+    <script>
+        function getMobileOS() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) {
+                return "android";
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return "ios";
+            }
+            return "unknown";
+        }
+
+        const os = getMobileOS();
+        let appLink = "rentofly://settings";
+        let storeLink = "";
+
+        if (os === "android") {
+            storeLink = "https://play.google.com/store/apps/details?id=com.rentoflymobile";
+        } else if (os === "ios") {
+            storeLink = "https://apps.apple.com/in/app/rentofly/id6473688330";
+        } else {
+            storeLink = "https://rentofly.com/"; // Fallback page
+        }
+
+        // Set manual link in case redirection fails
+        document.getElementById("manual-link").href = appLink;
+
+        // Try opening the app
+        window.location.href = appLink;
+
+        // If the app isn't installed, redirect to the store after 2 seconds
+        setTimeout(() => {
+            window.location.href = storeLink;
+        }, 2000);
+    </script>
+
+</body>
+</html>
