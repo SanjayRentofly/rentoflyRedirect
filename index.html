@@ -10,9 +10,6 @@
             text-align: center;
             padding: 20px;
         }
-        .hidden {
-            display: none;
-        }
         #manual-link {
             margin-top: 20px;
             display: block;
@@ -37,38 +34,41 @@
             }
             return "unknown";
         }
-    
+
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
-    
+
         const os = getMobileOS();
-        let screen = getQueryParam("screen") || "home"; // Default to home if no screen parameter
-        let appLink = `rentofly://${screen}`;
-    
+        const screen = getQueryParam("screen") || "home";  // Default to "home" if no param is provided
+        const env = getQueryParam("env") || "prod";  // "prod" or "dev"
+
+        // Use different schemes for production and development
+        const scheme = env === "dev" ? "rentofly-dev://" : "rentofly://";
+        const appLink = `${scheme}${screen}`;
+
+        let storeLink = "https://rentofly.com/";  // Default fallback
+
         if (os === "android") {
             storeLink = "https://play.google.com/store/apps/details?id=com.rentoflymobile";
         } else if (os === "ios") {
             storeLink = "https://apps.apple.com/in/app/rentofly/id6473688330";
-        } else {
-            storeLink = "https://rentofly.com/"; // Fallback page
         }
-    
-        // Set manual link in case redirection fails
+
+        // Set the manual link
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("manual-link").href = appLink;
         });
-    
+
         // Try opening the app
         window.location.href = appLink;
-    
-        // If the app isn't installed, redirect to the store after 2 seconds
+
+        // Redirect to the store if the app is not installed (after 2s)
         setTimeout(() => {
             window.location.href = storeLink;
         }, 2000);
     </script>
-    
 
 </body>
 </html>
