@@ -35,20 +35,26 @@
             return "unknown";
         }
 
-        function getQueryParam(param) {
+        function getQueryParams() {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+            let params = "";
+            for (const [key, value] of urlParams.entries()) {
+                if (key !== "env") { // Exclude 'env' since it's used for scheme selection
+                    params += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`;
+                }
+            }
+            return params ? `?${params.slice(0, -1)}` : ""; // Remove last '&' and return
         }
 
         const os = getMobileOS();
-        const screen = getQueryParam("screen") || "home";  // Default to "home" if no param is provided
-        const env = getQueryParam("env") || "prod";  // "prod" or "dev"
+        const screen = new URLSearchParams(window.location.search).get("screen") || "home"; 
+        const env = new URLSearchParams(window.location.search).get("env") || "prod"; 
 
-        // Use different schemes for production and development
         const scheme = env === "dev" ? "rentofly-dev://" : "rentofly://";
-        const appLink = `${scheme}${screen}`;
+        const queryParams = getQueryParams();
+        const appLink = `${scheme}${screen}${queryParams}`;
 
-        let storeLink = "https://rentofly.com/";  // Default fallback
+        let storeLink = "https://rentofly.com/"; 
 
         if (os === "android") {
             storeLink = "https://play.google.com/store/apps/details?id=com.rentoflymobile";
