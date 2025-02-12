@@ -1,80 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Open My App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        #manual-link {
-            margin-top: 20px;
-            display: block;
-            font-size: 18px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      #manual-link {
+        margin-top: 20px;
+        display: block;
+        font-size: 18px;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <h2>Redirecting to the app...</h2>
     <p>If you are not redirected automatically, click the button below:</p>
 
     <a id="manual-link" href="#">Open App Manually</a>
 
     <script>
-        function getMobileOS() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            if (/android/i.test(userAgent)) {
-                return "android";
-            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                return "ios";
-            }
-            return "unknown";
+      function getMobileOS() {
+        const userAgent =
+          navigator.userAgent || navigator.vendor || window.opera;
+        if (/android/i.test(userAgent)) {
+          return "android";
+        } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+          return "ios";
         }
+        return "unknown";
+      }
 
-        function getQueryParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let params = "";
-            for (const [key, value] of urlParams.entries()) {
-                if (key !== "env") { // Exclude 'env' since it's used for scheme selection
-                    params += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`;
-                }
-            }
-            return params ? `?${params.slice(0, -1)}` : ""; // Remove last '&' and return
-        }
+      function getQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let params = "";
 
-        const os = getMobileOS();
-        const screen = new URLSearchParams(window.location.search).get("screen") || "home"; 
-        const env = new URLSearchParams(window.location.search).get("env") || "prod"; 
-
-        const scheme = env === "dev" ? "rentofly-dev://" : "rentofly://";
-        const queryParams = getQueryParams();
-        const appLink = `${scheme}${screen}${queryParams}`;
-
-        let storeLink = "https://rentofly.com/"; 
-
-        if (os === "android") {
-            storeLink = "https://play.google.com/store/apps/details?id=com.rentoflymobile";
-        } else if (os === "ios") {
-            storeLink = "https://apps.apple.com/in/app/rentofly/id6473688330";
-        }
-
-        // Set the manual link
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("manual-link").href = appLink;
+        urlParams.forEach((value, key) => {
+          if (key !== "screen" && key !== "env") {
+            params += `/${value}`; // Append all extra parameters
+          }
         });
 
-        // Try opening the app
-        window.location.href = appLink;
+        return params; // Returns "/ABC123" for promoCode=ABC123
+      }
 
-        // Redirect to the store if the app is not installed (after 2s)
-        setTimeout(() => {
-            window.location.href = storeLink;
-        }, 2000);
+      const env = getQueryParam("env") || "prod";
+      const screen = getQueryParam("screen") || "home";
+      const scheme = env === "dev" ? "rentofly-dev://" : "rentofly://";
+      const queryParams = getQueryParams();
+
+      const appLink = `${scheme}${screen}${queryParams}`;
+      console.log("Deep Link:", appLink);
+
+      let storeLink = "https://rentofly.com/";
+
+      if (os === "android") {
+        storeLink =
+          "https://play.google.com/store/apps/details?id=com.rentoflymobile";
+      } else if (os === "ios") {
+        storeLink = "https://apps.apple.com/in/app/rentofly/id6473688330";
+      }
+
+      // Set the manual link
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("manual-link").href = appLink;
+      });
+
+      // Try opening the app
+      window.location.href = appLink;
+
+      // Redirect to the store if the app is not installed (after 2s)
+      setTimeout(() => {
+        window.location.href = storeLink;
+      }, 2000);
     </script>
-
-</body>
+  </body>
 </html>
