@@ -48,13 +48,16 @@
         return params; // Returns "/ABC123" for promoCode=ABC123
       }
 
-      const env = getQueryParam("env") || "prod";
-      const screen = getQueryParam("screen") || "home";
+      const urlParams = new URLSearchParams(window.location.search);
+      const env = urlParams.get("env") || "prod";
+      const screen = urlParams.get("screen") || "home";
       const scheme = env === "dev" ? "rentofly-dev://" : "rentofly://";
       const queryParams = getQueryParams();
 
       const appLink = `${scheme}${screen}${queryParams}`;
       console.log("Deep Link:", appLink);
+
+      const os = getMobileOS();
 
       let storeLink = "https://rentofly.com/";
 
